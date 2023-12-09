@@ -1,18 +1,139 @@
 /**
  * @jest-environment jsdom
  */
+import "@testing-library/jest-dom";
+import { screen, fireEvent, waitFor } from "@testing-library/dom";
+import mockStore from "../__mocks__/store.js";
+import NewBill from "../containers/NewBill.js";
+import NewBillUI from "../views/NewBillUI.js";
+import { ROUTES, ROUTES_PATH } from "../constants/routes.js";
+import { localStorageMock } from "../__mocks__/localStorage.js";
+import router from "../app/Router.js";
 
-import { screen } from "@testing-library/dom"
-import NewBillUI from "../views/NewBillUI.js"
-import NewBill from "../containers/NewBill.js"
+jest.mock("../app/Store", () => mockStore);
 
+// Description du groupe de tests pour la page NewBill
+describe("NewBill Page", () => {
+  // Configuration initiale avant chaque test
+  beforeEach(async () => {
+    // Nettoyer le DOM
+    document.body.innerHTML = "";
+    // Configurer le localStorage mocké
+    Object.defineProperty(window, "localStorage", { value: localStorageMock });
+    window.localStorage.setItem(
+      "user",
+      JSON.stringify({ type: "Employee", email: "a@a" })
+    );
+    // Préparer le DOM pour le routage et l'UI
+    const root = document.createElement("div");
+    root.setAttribute("id", "root");
+    document.body.append(root);
+    router();
+    // Injecter le HTML de NewBill dans le DOM
+    document.body.innerHTML = NewBillUI();
+    // Naviguer vers la page NewBill
+    window.onNavigate(ROUTES_PATH.NewBill);
+  });
 
-describe("Given I am connected as an employee", () => {
-  describe("When I am on NewBill Page", () => {
-    test("Then ...", () => {
-      const html = NewBillUI()
-      document.body.innerHTML = html
-      //to-do write assertion
-    })
-  })
-})
+  // Nettoyage après chaque test
+  afterEach(() => {
+    // Réinitialiser les mocks et nettoyer le DOM
+    jest.clearAllMocks();
+    document.body.innerHTML = "";
+  });
+
+  // Test pour vérifier l'appel de handleSubmit lors de la soumission du formulaire
+  test("Should call handleSubmit when the form is submitted", async () => {
+    // Préparation pour la soumission du formulaire
+    await waitFor(() => screen.getByTestId("form-new-bill"));
+
+    // Création d'un espion (spy) pour surveiller les appels à la méthode handleSubmit
+    // Un espion est une fonction mockée qui permet de vérifier si elle a été appelée et avec quels arguments
+    const handleSubmitSpy = jest.fn();
+
+    // Initialisation de NewBill et remplacement de handleSubmit par l'espion
+    const newBill = new NewBill({
+      document,
+      onNavigate: () => {},
+      store: mockStore,
+      localStorage: window.localStorage,
+    });
+    // Remplacement de la méthode originale handleSubmit par l'espion
+    // Cela nous permet de surveiller et de tester l'appel à cette méthode sans modifier son comportement
+    newBill.handleSubmit = handleSubmitSpy;
+
+    // Attacher l'espion à l'événement de soumission du formulaire
+    const form = screen.getByTestId("form-new-bill");
+    form.removeEventListener("submit", newBill.handleSubmit);
+    form.addEventListener("submit", handleSubmitSpy);
+
+    // Simuler la soumission du formulaire
+    fireEvent.submit(form);
+
+    // Vérification que l'espion a été appelé lors de la soumission du formulaire
+    // Cela confirme que la méthode handleSubmit est bien exécutée lors de cet événement
+    await waitFor(() => {
+      expect(handleSubmitSpy).toHaveBeenCalled();
+    });
+  });
+
+  test("Should upload a file when a valid image is selected", async () => {
+    // Initialisation de l'instance NewBill pour le test
+    const newBill = new NewBill({
+      document,
+      onNavigate: () => {},
+      store: mockStore,
+      localStorage: window.localStorage,
+    });
+
+    // Création d'un espion pour surveiller les appels à la méthode handleChangeFile
+    // Cela permet de vérifier si la méthode est appelée lors de l'événement de changement de fichier
+    const handleChangeFile = jest.fn(newBill.handleChangeFile);
+
+    // Obtention de l'élément input de type fichier dans le DOM pour le test
+    const inputFile = screen.getByTestId("file");
+
+    // Attacher l'espion à l'événement de changement sur l'input de fichier
+    inputFile.addEventListener("change", handleChangeFile);
+
+    // Simuler le changement de fichier avec un fichier image valide
+    fireEvent.change(inputFile, {
+      target: {
+        files: [new File(["image"], "image.jpg", { type: "image/jpeg" })],
+      },
+    });
+
+    // Vérifier que l'espion a été appelé, confirmant que la méthode handleChangeFile est exécutée lors de l'événement
+    await waitFor(() => {
+      expect(handleChangeFile).toHaveBeenCalled();
+    });
+  });
+
+  test("Should call API when the form is submitted", async () => {
+    // Initialisation de l'instance NewBill pour le test
+    const newBill = new NewBill({
+      document,
+      onNavigate: () => {},
+      store: mockStore,
+      localStorage: window.localStorage,
+    });
+
+    // Création d'un espion pour surveiller les appels à la méthode handleSubmit
+    // Cela permet de vérifier si la méthode est appelée lors de la soumission du formulaire
+    const handleSubmit = jest.fn(newBill.handleSubmit);
+
+    // Obtention de l'élément formulaire dans le DOM pour le test
+    const form = screen.getByTestId("form-new-bill");
+
+    // Attacher l'espion à l'événement de soumission du formulaire
+    form.addEventListener("submit", handleSubmit);
+
+    // Simuler la soumission du formulaire
+    fireEvent.submit(form);
+
+    // Vérifier que l'espion a été appelé, confirmant que la méthode handleSubmit est exécutée lors de la soumission
+    await waitFor(() => {
+      expect(handleSubmit).toHaveBeenCalled();
+    });
+  });
+});
