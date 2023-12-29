@@ -136,4 +136,60 @@ describe("NewBill Page", () => {
       expect(handleSubmit).toHaveBeenCalled();
     });
   });
+
+  // Test pour vérifier la gestion des erreurs lors de la création d'une nouvelle facture
+test("Should handle errors if API call fails during file upload", async () => {
+  // Initialisation de l'instance NewBill pour le test
+  const newBill = new NewBill({
+    document,
+    onNavigate: () => {},
+    store: mockStore,
+    localStorage: window.localStorage,
+  });
+
+  // Simuler une erreur lors de l'appel à l'API
+  const postSpy = jest.spyOn(newBill.store.bills(), 'create').mockImplementationOnce(() =>
+    Promise.reject(new Error("Erreur lors de la création de la facture"))
+  );
+
+  // Simuler l'ajout d'un fichier valide
+  const inputFile = screen.getByTestId("file");
+  const file = new File(["image"], "image.jpg", { type: "image/jpeg" });
+  fireEvent.change(inputFile, { target: { files: [file] } });
+
+  // Vérifier la gestion des erreurs
+  await waitFor(() => {
+    expect(postSpy).toHaveBeenCalled();
+    // Vous pouvez également vérifier si un message d'erreur est affiché à l'utilisateur, si pertinent
+  });
+
+  // Nettoyer les mocks après le test
+  postSpy.mockRestore();
+});
+
+
+// Test pour vérifier que seul les fichiers avec les extensions .jpg, .jpeg, ou .png sont acceptés
+test("Should show error message for file with invalid extension", async () => {
+  // Initialisation de l'instance NewBill pour le test
+  const newBill = new NewBill({
+    document,
+    onNavigate: () => {},
+    store: mockStore,
+    localStorage: window.localStorage,
+  });
+
+  // Simuler l'ajout d'un fichier avec une extension invalide (ex: .txt)
+  const inputFile = screen.getByTestId("file");
+  const file = new File(["fileTXT"], "newbill.txt", { type: "text/plain" });
+  fireEvent.change(inputFile, { target: { files: [file] } });
+
+  // Vérifier que l'erreur est gérée correctement
+  await waitFor(() => {
+    expect(inputFile.value).toBe(""); // Vérifiez que l'input du fichier est réinitialisé
+    expect(newBill.fileErrorMessage).toBe("Extension de fichier non autorisée"); // Vérifiez que le message d'erreur est défini
+    expect(newBill.fileName).toBe(""); // Vérifiez que le nom du fichier est réinitialisé
+    
+  });
+});
+
 });
