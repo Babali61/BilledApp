@@ -9,7 +9,7 @@ import { localStorageMock } from "../__mocks__/localStorage.js";
 import mockStore from "../__mocks__/store";
 
 // Mock du store de l'application
-jest.mock("../app/store", () => mockStore);
+jest.mock("../app/Store.js", () => mockStore);
 
 // Test de l'interaction avec l'icône œil sur la page
 describe("When I click on an eye icon", () => {
@@ -26,7 +26,7 @@ describe("When I click on an eye icon", () => {
     });
 
     // Mock de la fonction modal jQuery
-    $.fn.modal = jest.fn(); 
+    $.fn.modal = jest.fn();
 
     // Déclenchement de l'événement click sur l'icône œil et vérification de l'ouverture de la modale
     const iconEye = screen.getByTestId("icon-eye");
@@ -34,6 +34,7 @@ describe("When I click on an eye icon", () => {
     expect($.fn.modal).toHaveBeenCalledWith("show");
   });
 });
+
 
 // Test de la récupération et du formatage des factures
 describe("When I am on Bills Page", () => {
@@ -55,6 +56,8 @@ describe("When I am on Bills Page", () => {
   });
 });
 
+
+// Tests pour vérifier que les factures sont correctement affichées dans un tableau
 describe("Given I am on Bills Page", () => {
   describe("When there are bills", () => {
     beforeEach(() => {
@@ -67,6 +70,8 @@ describe("Given I am on Bills Page", () => {
     });
   });
 
+
+  // Tests pour vérifier le comportement lorsqu'on clique sur l'icône œil
   describe("When I click on an eye icon", () => {
     test("Then a modal should be displayed with the bill image", () => {
       // Préparation du DOM pour le test
@@ -98,6 +103,7 @@ describe("Given I am on Bills Page", () => {
         );
       }
     });
+
     test("Then the modal should display a broken image with a specific src if there is no bill URL", () => {
       const iconEye = screen.getAllByTestId("icon-eye")[0];
       fireEvent.click(iconEye);
@@ -112,6 +118,8 @@ describe("Given I am on Bills Page", () => {
   });
 });
 
+
+// Tests pour vérifier l'affichage de la page d'erreur
 describe("When an error occurs", () => {
   test("Then the error page should be displayed", () => {
     const errorMessage = "Une erreur est survenue";
@@ -119,6 +127,9 @@ describe("When an error occurs", () => {
     expect(screen.getByText(errorMessage)).toBeTruthy();
   });
 });
+
+
+// Tests pour vérifier le comportement du clic sur le bouton pour créer une nouvelle facture
 describe("handleClickNewBill", () => {
   test("should navigate to new bill page on button click", () => {
     // Configurer le DOM nécessaire pour le test
@@ -151,6 +162,8 @@ describe("handleClickNewBill", () => {
   });
 });
 
+
+// Tests pour vérifier le comportement des icônes œil dans les factures
 describe("Bills", () => {
   test("if there are no eye icons, no click event listeners are added", () => {
     // Créer un DOM sans icônes œil
@@ -168,6 +181,8 @@ describe("Bills", () => {
   });
 });
 
+
+// Tests pour simuler et gérer une erreur 404 de l'API lors de la récupération des factures
 describe("Bills", () => {
   test("should handle 404 error in getBills method", async () => {
     const mockStoreWith404Error = {
@@ -194,6 +209,8 @@ describe("Bills", () => {
   });
 });
 
+
+// Tests pour simuler et gérer une erreur 500 de l'API lors de la récupération des factures
 describe("Bills", () => {
   test("should handle 500 error in getBills method", async () => {
     const mockStoreWith500Error = {

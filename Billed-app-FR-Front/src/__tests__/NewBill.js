@@ -10,7 +10,7 @@ import { ROUTES, ROUTES_PATH } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 import router from "../app/Router.js";
 
-jest.mock("../app/Store", () => mockStore);
+jest.mock("../app/Store.js", () => mockStore);
 
 // Description du groupe de tests pour la page NewBill
 describe("NewBill Page", () => {
