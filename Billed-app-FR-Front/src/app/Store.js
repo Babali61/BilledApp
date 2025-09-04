@@ -74,7 +74,7 @@ class Store {
   async testApiConnection() {
     try {
       console.log('🔍 Test de connexion à l\'API...')
-      const response = await fetch(`${this.api.baseUrl}/`)
+      const response = await fetch(`${this.api.baseUrl}`)
       if (response.ok) {
         const data = await response.text()
         console.log('✅ API accessible:', data)
