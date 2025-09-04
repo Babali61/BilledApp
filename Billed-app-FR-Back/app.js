@@ -12,7 +12,11 @@ const app = express();
 
 // Configuration CORS pour la production
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:8080',
+  origin: [
+    process.env.FRONTEND_URL || 'http://localhost:8080',
+    'https://billedappbabali.netlify.app',
+    'http://localhost:8080' // Pour le développement local
+  ],
   credentials: true,
   optionsSuccessStatus: 200
 };
