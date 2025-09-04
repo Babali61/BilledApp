@@ -56,7 +56,9 @@ class ApiEntity {
 
 class Store {
   constructor() {
-    this.api = new Api({baseUrl: 'http://localhost:5678'})
+    // Utilise l'URL de l'API depuis les variables d'environnement ou localhost par défaut
+    const apiBaseUrl = import.meta.env?.VITE_API_BASE_URL || 'http://localhost:5678'
+    this.api = new Api({baseUrl: apiBaseUrl})
   }
 
   user = uid => (new ApiEntity({key: 'users', api: this.api})).select({selector: uid})

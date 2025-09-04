@@ -1,6 +1,8 @@
 {
   "scripts": {
-    "test": "jest --coverage --noStackTrace --silent"
+    "test": "jest --coverage --noStackTrace --silent",
+    "build": "echo 'Build completed - static files ready for deployment'",
+    "start": "live-server --port=8080"
   },
   "jest": {
     "verbose": false,

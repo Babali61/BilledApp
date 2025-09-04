@@ -1,0 +1,36 @@
+[build]
+  # Dossier de publication (où se trouve index.html)
+  publish = "."
+  
+  # Commande de build (optionnel pour ce projet)
+  command = "npm run build"
+
+[build.environment]
+  # Version de Node.js
+  NODE_VERSION = "18"
+
+# Redirections pour le SPA (Single Page Application)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Headers de sécurité
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Cache pour les assets statiques
+[[headers]]
+  for = "/src/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "/src/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"

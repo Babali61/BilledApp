@@ -9,7 +9,14 @@ const billRoute = require('./routes/bill');
 
 const upload = multer({ dest: 'public/' });
 const app = express();
-app.use(cors());
+
+// Configuration CORS pour la production
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || 'http://localhost:8080',
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
 app.use(helmet());
 app.use(express.json());
 app.use('/public', express.static('public'));
