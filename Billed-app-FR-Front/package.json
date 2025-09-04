@@ -1,7 +1,8 @@
 {
   "scripts": {
     "test": "jest --coverage --noStackTrace --silent",
-    "build": "echo 'Build completed - static files ready for deployment'",
+    "build": "node build.js",
+    "build:prod": "NODE_ENV=production node build-production.js",
     "start": "live-server --port=8080"
   },
   "jest": {

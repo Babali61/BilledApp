@@ -38,6 +38,17 @@
   </style>  
   <body>
     <div id="root"></div>
+    <!-- Configuration de l'API -->
+    <script>
+      // Injection de la variable d'environnement pour l'URL de l'API
+      window.API_BASE_URL = 'https://billedapp.onrender.com';
+      
+      // Logs de debug pour le déploiement
+      console.log('🌐 BilledApp Frontend - Configuration initialisée');
+      console.log('🔗 URL de l\'API injectée:', window.API_BASE_URL);
+      console.log('📱 User Agent:', navigator.userAgent);
+      console.log('🌍 URL actuelle:', window.location.href);
+    </script>
     <!-- Datepicker.js -->
     <script src="src/app/datepicker.js">
     </script>

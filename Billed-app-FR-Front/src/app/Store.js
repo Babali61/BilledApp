@@ -57,8 +57,34 @@ class ApiEntity {
 class Store {
   constructor() {
     // Utilise l'URL de l'API depuis les variables d'environnement ou localhost par défaut
-    const apiBaseUrl = import.meta.env?.VITE_API_BASE_URL || 'http://localhost:5678'
+    // Pour la production, l'URL sera injectée par Netlify
+    const apiBaseUrl = window.API_BASE_URL || 'http://localhost:5678'
+    
+    // Logs de debug pour le déploiement
+    console.log('🚀 BilledApp - Initialisation du Store')
+    console.log('📍 URL de l\'API configurée:', apiBaseUrl)
+    console.log('🌍 Environnement:', window.location.hostname === 'localhost' ? 'Développement' : 'Production')
+    
     this.api = new Api({baseUrl: apiBaseUrl})
+    
+    // Test de connectivité API
+    this.testApiConnection()
+  }
+  
+  async testApiConnection() {
+    try {
+      console.log('🔍 Test de connexion à l\'API...')
+      const response = await fetch(`${this.api.baseUrl}/`)
+      if (response.ok) {
+        const data = await response.text()
+        console.log('✅ API accessible:', data)
+      } else {
+        console.warn('⚠️ API répond mais avec une erreur:', response.status)
+      }
+    } catch (error) {
+      console.error('❌ Erreur de connexion à l\'API:', error.message)
+      console.log('💡 Vérifiez que l\'URL de l\'API est correcte:', this.api.baseUrl)
+    }
   }
 
   user = uid => (new ApiEntity({key: 'users', api: this.api})).select({selector: uid})
